@@ -1,0 +1,30 @@
+{% extends "base/base.html" %}
+{% block content %}
+  <section class="public-page-heading">
+    <div class="container">
+      <div class="eyebrow">LOCAL EXPERTISE, ALL IN ONE PLACE</div>
+      <h1>A professional for every task.</h1>
+      <p>Explore the skills that keep homes, businesses and communities moving.</p>
+    </div>
+  </section>
+  <section class="section container">
+    <div class="category-grid">
+      {% for category in categories %}
+        <a class="category-card"
+           href="{% url 'find_workers' %}?category={{ category.slug }}">
+          <div class="category-icon">
+            <i aria-hidden="true" class="bi bi-{{ category.icon }}">
+            </i>
+          </div>
+          <h3>{{ category.name }}</h3>
+          <p>{{ category.description }}</p>
+          <span>Explore workers <i aria-hidden="true" class="bi bi-arrow-right">
+            </i>
+          </span>
+        </a>
+      {% empty %}
+        {% include "components/empty_state.html" with empty_title="No active categories yet" %}
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

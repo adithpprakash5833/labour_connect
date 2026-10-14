@@ -1,0 +1,16 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="panel form-panel">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% include "components/form_fields.html" %}
+      <div class="form-actions">
+        <button class="btn btn-primary">
+          {{ submit_label|default:'Save' }} <i aria-hidden="true" class="bi bi-arrow-right">
+          </i>
+        </button>
+        <a class="btn btn-light" href="{% url 'dashboard' %}">Back to dashboard</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

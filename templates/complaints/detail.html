@@ -1,0 +1,55 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="detail-layout">
+    <div>
+      <article class="panel">
+        {% include "components/status_badge.html" with status=complaint.status %}
+        <h2 class="mt-4">Complaint details</h2>
+        <p class="preserve-lines">{{ complaint.description }}</p>
+        <div class="detail-grid">
+          <div>
+            <span>Submitted by</span>
+            <strong>{{ complaint.created_by.display_name }}</strong>
+          </div>
+          <div>
+            <span>Submitted</span>
+            <strong>{{ complaint.created_at|date:'d M Y, h:i A' }}</strong>
+          </div>
+          <div>
+            <span>Related service</span>
+            <strong>{{ complaint.related_booking|default:complaint.related_job|default:'General support' }}</strong>
+          </div>
+          <div>
+            <span>Against</span>
+            <strong>{{ complaint.against_user.display_name|default:'Not specified' }}</strong>
+          </div>
+        </div>
+      </article>
+      <section class="panel mt-4">
+        <h2>Administrator response</h2>
+        {% if complaint.admin_response %}
+          <p class="preserve-lines">{{ complaint.admin_response }}</p>
+          <small>Updated {{ complaint.updated_at|date:'d M Y, h:i A' }}</small>
+        {% else %}
+          <p class="text-muted">Our administrator will review your complaint and respond here.</p>
+        {% endif %}
+      </section>
+    </div>
+    <aside class="panel">
+      {% if form %}
+        <h2>Review & respond</h2>
+        <form method="post">
+          {% csrf_token %}
+          {% include "components/form_fields.html" %}
+          <button class="btn btn-primary mt-3">Save response & notify</button>
+        </form>
+      {% else %}
+        <i aria-hidden="true" class="bi bi-headset support-icon">
+        </i>
+        <h2>We’re here to help.</h2>
+        <p>You’ll receive a notification when the administrator updates this complaint.</p>
+        <a class="text-link" href="{% url 'complaints' %}">Back to complaints</a>
+      {% endif %}
+    </aside>
+  </div>
+{% endblock %}

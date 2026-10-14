@@ -1,0 +1,14 @@
+<div class="empty-state">
+  <div class="empty-icon">
+    <i aria-hidden="true" class="bi bi-{{ empty_icon|default:'inbox' }}">
+    </i>
+  </div>
+  <h3>{{ empty_title|default:'Nothing here yet' }}</h3>
+  <p>{{ empty_message|default:'Your activity will appear here when you get started.' }}</p>
+  {% if empty_url %}
+    <a class="btn btn-primary" href="{% url empty_url %}">
+      {{ empty_cta|default:'Get started' }} <i aria-hidden="true" class="bi bi-arrow-right">
+      </i>
+    </a>
+  {% endif %}
+</div>

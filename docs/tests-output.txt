@@ -1,0 +1,13 @@
+MySQL process running: True
+MySQL connection verified: 8.4.9
+Creating test database for alias 'default'...
+
+.........................................................
+----------------------------------------------------------------------
+Ran 57 tests in 107.710s
+
+OK
+Destroying test database for alias 'default'...
+
+Found 57 test(s).
+System check identified no issues (0 silenced).

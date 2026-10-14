@@ -1,0 +1,42 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="analytics-highlight panel">
+    <div>
+      <div class="eyebrow">SERVICE COMPLETION</div>
+      <h2>{{ completion_rate }}%</h2>
+      <p>{{ completed }} completed of {{ total }} total services</p>
+    </div>
+    <div class="progress"
+         role="progressbar"
+         aria-label="Completion rate"
+         aria-valuenow="{{ completion_rate }}"
+         aria-valuemin="0"
+         aria-valuemax="100">
+      <div class="progress-bar" style="width:{{ completion_rate }}%"></div>
+    </div>
+  </div>
+  <div class="analytics-grid mt-4">
+    {% for chart in charts %}
+      <section class="panel chart-panel">
+        <h2>{{ chart.title }}</h2>
+        <div class="chart-container">
+          <canvas data-analytics-chart="{{ forloop.counter0 }}"
+                  aria-label="{{ chart.title }}"
+                  role="img">
+          </canvas>
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+  {{ charts|json_script:'analyticsCharts' }}
+  <section class="mt-5">
+    <h2>Highest-rated professionals</h2>
+    <div class="workers-grid mt-3">
+      {% for worker in top_workers %}
+        {% include "components/worker_card.html" %}
+      {% empty %}
+        {% include "components/empty_state.html" with empty_title="No rated workers yet" %}
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

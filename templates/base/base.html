@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+          content="Labour Connect brings customers and verified local professionals together.">
+    <meta name="theme-color" content="#2536a8">
+    <title>
+      {% block title %}
+      {{ title|default:'Trusted people. Better work.' }}{% endblock %} · Labour Connect</title>
+    <link rel="icon" href="{% static 'images/logo.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    {% block layout %}
+      {% include "components/public_nav.html" %}
+      <main id="main">
+        {% block content %}{% endblock %}
+      </main>
+      {% include "components/footer.html" %}
+    {% endblock %}
+    <div class="toast-stack" aria-live="polite" aria-atomic="true">
+      {% for message in messages %}
+        <div class="app-toast {{ message.tags }}" role="status">
+          <i aria-hidden="true" class="bi bi-info-circle">
+          </i>
+          <span>{{ message }}</span>
+          <button class="toast-dismiss" aria-label="Dismiss notification">×</button>
+        </div>
+      {% endfor %}
+    </div>
+    {% include "components/confirmation_modal.html" %}
+    <script src="{% static 'vendor/bootstrap.bundle.min.js' %}" defer></script>
+    <script src="{% static 'vendor/chart.umd.min.js' %}" defer></script>
+    <script src="{% static 'js/app.js' %}" defer></script>
+    {% if maps_key %}
+      <script src="{% static 'js/maps.js' %}"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?key={{ maps_key|urlencode }}&amp;loading=async&amp;libraries=places,marker&amp;callback=initLabourMaps" async defer>
+      </script>
+    {% endif %}
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

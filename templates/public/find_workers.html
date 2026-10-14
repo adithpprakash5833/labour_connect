@@ -1,0 +1,151 @@
+{% extends "base/base.html" %}
+{% block content %}
+  <section class="public-page-heading search-heading">
+    <div class="container">
+      <div class="eyebrow">VERIFIED TALENT. CLOSE TO HOME.</div>
+      <h1>Find the right hands for the job.</h1>
+      <p>Compare local professionals and choose who works for you.</p>
+      <form class="search-bar" method="get">
+        <i aria-hidden="true" class="bi bi-search">
+        </i>
+        <label for="workerSearch" class="visually-hidden">Search workers</label>
+        <input id="workerSearch"
+               name="q"
+               value="{{ request.GET.q }}"
+               placeholder="Name, service or skill">
+        <label for="workerLocation" class="visually-hidden">Location</label>
+        <div class="location-search">
+          <i aria-hidden="true" class="bi bi-geo-alt">
+          </i>
+          <input id="workerLocation"
+                 name="location"
+                 value="{{ request.GET.location }}"
+                 placeholder="City or working area">
+        </div>
+        <button class="btn btn-primary">Search workers</button>
+      </form>
+    </div>
+  </section>
+  <section class="container search-layout">
+    <aside class="filter-panel">
+      <div class="filter-heading">
+        <h2>
+          <i aria-hidden="true" class="bi bi-sliders2">
+          </i> Filters
+        </h2>
+        <a href="{% url 'find_workers' %}">Reset</a>
+      </div>
+      <form method="get">
+        <input type="hidden" name="q" value="{{ request.GET.q }}">
+        <input type="hidden" name="location" value="{{ request.GET.location }}">
+        <div class="form-field">
+          <label for="category">Service category</label>
+          <select id="category" name="category" class="form-select">
+            <option value="">All categories</option>
+            {% for category in categories %}
+              <option value="{{ category.slug }}"
+                      {% if request.GET.category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="experience">Minimum experience</label>
+          <input class="form-control"
+                 id="experience"
+                 name="experience"
+                 type="number"
+                 min="0"
+                 max="70"
+                 value="{{ request.GET.experience }}"
+                 placeholder="Years">
+        </div>
+        <div class="form-field">
+          <label for="rating">Minimum rating</label>
+          <select class="form-select" name="rating" id="rating">
+            <option value="">Any rating</option>
+            <option value="4" {% if request.GET.rating == '4' %}selected{% endif %}>4+ stars</option>
+            <option value="3" {% if request.GET.rating == '3' %}selected{% endif %}>3+ stars</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Hourly rate (₹)</label>
+          <div class="price-inputs">
+            <input class="form-control"
+                   aria-label="Minimum hourly rate"
+                   name="min_price"
+                   type="number"
+                   min="0"
+                   placeholder="Min"
+                   value="{{ request.GET.min_price }}">
+            <span>—</span>
+            <input class="form-control"
+                   aria-label="Maximum hourly rate"
+                   name="max_price"
+                   type="number"
+                   min="0"
+                   placeholder="Max"
+                   value="{{ request.GET.max_price }}">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="availability">Availability</label>
+          <select class="form-select" id="availability" name="availability">
+            <option value="">Any availability</option>
+            <option value="AVAILABLE"
+                    {% if request.GET.availability == 'AVAILABLE' %}selected{% endif %}>Available</option>
+            <option value="BUSY"
+                    {% if request.GET.availability == 'BUSY' %}selected{% endif %}>Busy</option>
+            <option value="UNAVAILABLE"
+                    {% if request.GET.availability == 'UNAVAILABLE' %}selected{% endif %}>Unavailable</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="sort">Sort by</label>
+          <select class="form-select" id="sort" name="sort">
+            <option value="recommended">Recommended</option>
+            <option value="rating"
+                    {% if request.GET.sort == 'rating' %}selected{% endif %}>Highest rated</option>
+            <option value="experience"
+                    {% if request.GET.sort == 'experience' %}selected{% endif %}>Most experienced</option>
+            <option value="price_low"
+                    {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: low to high</option>
+            <option value="price_high"
+                    {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: high to low</option>
+            <option value="nearest"
+                    {% if request.GET.sort == 'nearest' %}selected{% endif %}>Nearest (share location)</option>
+          </select>
+        </div>
+        <input type="hidden" name="latitude" value="{{ request.GET.latitude }}">
+        <input type="hidden" name="longitude" value="{{ request.GET.longitude }}">
+        <button class="btn btn-light w-100 mb-2" type="button" data-geolocate>
+          <i aria-hidden="true" class="bi bi-geo-alt">
+          </i> Share my location
+        </button>
+        <small data-location-message
+               class="d-block mb-3 text-muted"
+               aria-live="polite">Coordinates enable distance sorting.</small>
+        <div class="verified-filter">
+          <i aria-hidden="true" class="bi bi-patch-check-fill">
+          </i> Active, verified workers only
+        </div>
+        <button class="btn btn-primary w-100">Apply filters</button>
+      </form>
+    </aside>
+    <div class="search-results">
+      <div class="results-heading">
+        <h2>{{ page_obj.paginator.count }} professional{{ page_obj.paginator.count|pluralize }} found</h2>
+        <span>
+          <i aria-hidden="true" class="bi bi-shield-check">
+          </i> All profiles verified</span>
+        </div>
+        <div class="workers-grid search-workers">
+          {% for worker in workers %}
+            {% include "components/worker_card.html" %}
+          {% empty %}
+            {% include "components/empty_state.html" with empty_title="No matching professionals" empty_message="Try a different skill, location or price range." empty_url="find_workers" empty_cta="Clear filters" %}
+          {% endfor %}
+        </div>
+        {% include "components/pagination.html" %}
+      </div>
+    </section>
+{% endblock %}

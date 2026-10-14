@@ -1,0 +1,95 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <section class="panel receipt-panel">
+    <div class="receipt-head">
+      <span class="receipt-icon">
+        <i aria-hidden="true" class="bi bi-receipt">
+        </i>
+      </span>
+      <div class="eyebrow">PAYMENT RECORD #{{ payment.pk }}</div>
+      <h2>₹{{ payment.amount|floatformat:2 }}</h2>
+      {% include "components/status_badge.html" with status=payment.payment_status %}
+    </div>
+    {% if payment.payment_method == "DEMO" %}
+      <div class="info-banner">
+        <i aria-hidden="true" class="bi bi-info-circle">
+        </i> DEMO SIMULATION. No money has been collected or transferred.
+      </div>
+    {% else %}
+      <div class="info-banner">This records an off-platform payment. The professional confirms receipt.</div>
+    {% endif %}
+    <dl class="receipt-details">
+      <div>
+        <dt>Service</dt>
+        <dd>
+          {{ payment.service.title }}
+        </dd>
+      </div>
+      <div>
+        <dt>Customer</dt>
+        <dd>
+          {{ payment.customer.display_name }}
+        </dd>
+      </div>
+      <div>
+        <dt>Professional</dt>
+        <dd>
+          {{ payment.worker.user.display_name }}
+        </dd>
+      </div>
+      <div>
+        <dt>Method</dt>
+        <dd>
+          {{ payment.get_payment_method_display }}
+        </dd>
+      </div>
+      <div>
+        <dt>Reference</dt>
+        <dd>
+          {{ payment.transaction_reference|default:'Cash payment' }}
+        </dd>
+      </div>
+      <div>
+        <dt>Recorded</dt>
+        <dd>
+          {{ payment.created_at|date:'d M Y, h:i A' }}
+        </dd>
+      </div>
+      <div>
+        <dt>Confirmed</dt>
+        <dd>
+          {{ payment.payment_date|date:'d M Y, h:i A'|default:'Awaiting confirmation' }}
+        </dd>
+      </div>
+    </dl>
+    <div class="service-actions">
+      {% if can_confirm %}
+        <form method="post"
+              action="{% url 'payment_update' payment.pk %}"
+              data-confirm="Confirm that this payment was received?">
+          {% csrf_token %}
+          <input type="hidden" name="target" value="PAID">
+          <button class="btn btn-primary">Confirm receipt</button>
+        </form>
+        <form method="post"
+              action="{% url 'payment_update' payment.pk %}"
+              data-confirm="Mark this payment as failed?">
+          {% csrf_token %}
+          <input type="hidden" name="target" value="FAILED">
+          <button class="btn btn-outline-danger">Mark failed</button>
+        </form>
+      {% endif %}
+      {% if can_refund %}
+        <form method="post"
+              action="{% url 'payment_update' payment.pk %}"
+              data-confirm="Mark this record refunded? This records a refund; it does not transfer money.">
+          {% csrf_token %}
+          <input type="hidden" name="target" value="REFUNDED">
+          <button class="btn btn-outline-danger">Record refund</button>
+        </form>
+      {% endif %}
+      <a class="btn btn-light"
+         href="{% url 'service_detail' payment.service.kind payment.service.pk %}">View service</a>
+    </div>
+  </section>
+{% endblock %}

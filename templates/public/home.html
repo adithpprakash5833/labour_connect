@@ -1,0 +1,311 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow-pill">
+          <span></span> YOUR NEIGHBOURHOOD. YOUR PROFESSIONALS.
+        </div>
+        <h1>
+          Good people.
+          <br>
+          Great skills.
+          <br>
+          <span>Work made easy.</span>
+        </h1>
+        <p>From a quick repair to your next big project, connect with verified local professionals who get the job done.</p>
+        <form action="{% url 'find_workers' %}" class="hero-search" method="get">
+          <i aria-hidden="true" class="bi bi-search">
+          </i>
+          <label class="visually-hidden" for="heroSearch">What service do you need?</label>
+          <input id="heroSearch"
+                 name="q"
+                 placeholder="Try electrician, plumber, painter…">
+          <button class="btn btn-primary">
+            Find a worker <i aria-hidden="true" class="bi bi-arrow-right">
+            </i>
+          </button>
+        </form>
+        <div class="hero-popular">
+          <span>Popular:</span>
+          {% for category in categories|slice:':3' %}
+            <a href="{% url 'find_workers' %}?category={{ category.slug }}">{{ category.name }}</a>
+          {% endfor %}
+        </div>
+        <div class="hero-worker-join">Offer your skills? <a href="{% url 'register' %}?role=worker">Join as a worker <i class="bi bi-arrow-up-right" aria-hidden="true">
+          </i>
+          </a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-icon">
+            <i aria-hidden="true" class="bi bi-shield-check">
+            </i>
+          </div>
+          <div>
+            <strong>Verified skills. Transparent profiles.</strong>
+            <span>Find the right person with confidence.</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+        <img class="hero-illustration"
+             src="{% static 'images/hero.svg' %}"
+             alt="Illustration of local professionals ready to help with your home and projects">
+        <div class="floating-note note-top">
+          <span class="note-icon">
+            <i aria-hidden="true" class="bi bi-patch-check-fill">
+            </i>
+          </span>
+          <div>
+            <strong>Verified professionals</strong>
+            <small>Reviewed by our team</small>
+          </div>
+        </div>
+        <div class="floating-note note-bottom">
+          <span class="note-icon warm">
+            <i aria-hidden="true" class="bi bi-tools">
+            </i>
+          </span>
+          <div>
+            <strong>Local talent, one connection</strong>
+            <small>Skilled people. Meaningful work.</small>
+          </div>
+        </div>
+        <div class="hero-caption">
+          <span class="dot"></span> MADE FOR YOUR LOCAL COMMUNITY
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="trust-strip">
+    <div class="container trust-strip-grid">
+      <div>
+        <i aria-hidden="true" class="bi bi-shield-check">
+        </i> Administrator-verified workers
+      </div>
+      <div>
+        <i aria-hidden="true" class="bi bi-geo-alt">
+        </i> People in your neighbourhood
+      </div>
+      <div>
+        <i aria-hidden="true" class="bi bi-currency-rupee">
+        </i> Clear service rates
+      </div>
+      <div>
+        <i aria-hidden="true" class="bi bi-star">
+        </i> Reviews from completed work
+      </div>
+    </div>
+  </section>
+  <section class="section container">
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">A SKILL FOR EVERY NEED</div>
+        <h2>What can we help you with?</h2>
+        <p>Everyday fixes. Specialist projects. Find your people.</p>
+      </div>
+      <a class="text-link"
+         href="{% url 'services' %}">Explore all services <i aria-hidden="true"
+    class="bi bi-arrow-right">
+        </i>
+      </a>
+    </div>
+    <div class="category-grid">
+      {% for category in categories|slice:':8' %}
+        <a class="category-card reveal"
+           href="{% url 'find_workers' %}?category={{ category.slug }}">
+          <div class="category-icon">
+            <i aria-hidden="true" class="bi bi-{{ category.icon }}">
+            </i>
+          </div>
+          <h3>{{ category.name }}</h3>
+          <span>Find a professional <i aria-hidden="true" class="bi bi-arrow-up-right">
+            </i>
+          </span>
+        </a>
+      {% empty %}
+        {% include "components/empty_state.html" with empty_title="Services are being added" empty_message="Visit again soon to discover professionals in your area." %}
+      {% endfor %}
+    </div>
+  </section>
+  <section class="how-section" id="how-it-works">
+    <div class="container">
+      <div class="section-heading centered">
+        <div>
+          <div class="eyebrow">LESS HASSLE. MORE GETTING THINGS DONE.</div>
+          <h2>
+            Your next helping hand,
+            <br>
+            in three simple steps.
+          </h2>
+        </div>
+      </div>
+      <div class="steps-grid">
+        <article class="step reveal">
+          <span class="step-number">01</span>
+          <div class="step-icon">
+            <i aria-hidden="true" class="bi bi-search">
+            </i>
+          </div>
+          <h3>Find your professional</h3>
+          <p>Search local skills and compare experience, service rates, and verified profiles.</p>
+        </article>
+        <article class="step reveal">
+          <span class="step-number">02</span>
+          <div class="step-icon">
+            <i aria-hidden="true" class="bi bi-calendar2-check">
+            </i>
+          </div>
+          <h3>Connect & book</h3>
+          <p>Share your task, date and budget. Your professional will confirm your request.</p>
+        </article>
+        <article class="step reveal">
+          <span class="step-number">03</span>
+          <div class="step-icon">
+            <i aria-hidden="true" class="bi bi-check2-all">
+            </i>
+          </div>
+          <h3>Get it done, together</h3>
+          <p>Track progress, record your payment, and review your completed service.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section class="section container">
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">REAL SKILLS. READY TO HELP.</div>
+        <h2>Meet your local professionals</h2>
+        <p>Verified profiles, with ratings earned through completed work.</p>
+      </div>
+      <a class="text-link"
+         href="{% url 'find_workers' %}">Find all workers <i aria-hidden="true"
+    class="bi bi-arrow-right">
+        </i>
+      </a>
+    </div>
+    <div class="workers-grid">
+      {% for worker in workers %}
+        {% include "components/worker_card.html" %}
+      {% empty %}
+        {% include "components/empty_state.html" with empty_title="Be one of our first professionals" empty_message="Create your worker profile and bring your skills to the community." empty_url="register" empty_cta="Join Labour Connect" %}
+      {% endfor %}
+    </div>
+  </section>
+  <section class="why-section">
+    <div class="container why-grid">
+      <div>
+        <div class="eyebrow">BUILT AROUND TRUST</div>
+        <h2>
+          Great work begins
+          <br>
+          with a real connection.
+        </h2>
+        <p>Finding help shouldn’t mean endless phone calls and guesswork. Labour Connect puts the details you need in one place.</p>
+        <a class="btn btn-primary"
+           href="{% url 'about' %}">Get to know us <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+          </i>
+        </a>
+      </div>
+      <div class="why-cards">
+        <article>
+          <i aria-hidden="true" class="bi bi-person-check">
+          </i>
+          <h3>People, verified</h3>
+          <p>Every professional goes through administrator review before offering services.</p>
+        </article>
+        <article>
+          <i aria-hidden="true" class="bi bi-receipt">
+          </i>
+          <h3>Clear from the start</h3>
+          <p>Review rates and agree a budget before you send your request.</p>
+        </article>
+        <article>
+          <i aria-hidden="true" class="bi bi-activity">
+          </i>
+          <h3>Every step, visible</h3>
+          <p>Follow your service from request to completion with status updates.</p>
+        </article>
+        <article>
+          <i aria-hidden="true" class="bi bi-chat-heart">
+          </i>
+          <h3>Your experience matters</h3>
+          <p>Reviews are tied to real completed services on the platform.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section class="container stats-band">
+    <div>
+      <strong data-counter="{{ stats.workers }}">{{ stats.workers }}</strong>
+      <span>Verified professionals</span>
+    </div>
+    <div>
+      <strong data-counter="{{ stats.categories }}">{{ stats.categories }}</strong>
+      <span>Service categories</span>
+    </div>
+    <div>
+      <strong data-counter="{{ stats.completed }}">{{ stats.completed }}</strong>
+      <span>Completed services</span>
+    </div>
+    <p>
+      Every number reflects
+      <br>
+      activity on Labour Connect.
+    </p>
+  </section>
+  <section class="section container">
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">WORK WELL DONE</div>
+        <h2>Feedback from the community</h2>
+        <p>Reviews from completed services. Fictional demo reviews are marked as sample content.</p>
+      </div>
+    </div>
+    <div class="testimonials-grid">
+      {% for review in testimonials %}
+        <article class="testimonial-card">
+          <span class="stars">
+            {% for i in '12345' %}
+              {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+            {% endfor %}
+          </span>
+          <blockquote>
+            {{ review.text }}
+          </blockquote>
+          <div class="testimonial-author">
+            <span class="avatar avatar-sm">{{ review.customer.initials }}</span>
+            <div>
+              <strong>{{ review.customer.display_name }}</strong>
+              <small>{{ review.worker.category.name }} service · Completed</small>
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        {% include "components/empty_state.html" with empty_title="Your experience shapes our community" empty_message="Feedback will appear here after customers complete services." empty_icon="chat-heart" %}
+      {% endfor %}
+    </div>
+  </section>
+  <section class="container section">
+    <div class="cta-banner">
+      <div>
+        <span class="eyebrow">YOUR SKILLS DESERVE OPPORTUNITY</span>
+        <h2>
+          Do great work.
+          <br>
+          Build your local reputation.
+        </h2>
+        <p>Join Labour Connect and connect with customers who need your skills.</p>
+      </div>
+      <a class="btn btn-white"
+         href="{% url 'register' %}?role=worker">Join as a worker <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+        </i>
+      </a>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,13 @@
+.env
+.venv/
+.runtime/
+work/
+__pycache__/
+*.pyc
+*.sqlite3
+media/
+private_media/
+staticfiles/
+demo_accounts.txt
+*.log
+.local/

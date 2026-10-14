@@ -1,0 +1,45 @@
+{% extends "dashboard/base.html" %}
+{% block page_action %}
+  {% if create_url %}
+    <a class="btn btn-primary" href="{% url create_url %}">
+      <i aria-hidden="true" class="bi bi-plus-lg">
+      </i> {{ create_label }}</a>
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <section class="panel records-panel">
+    {% if status_filter or payment_filter or user_filter or verification_filter or search_filter %}
+      <form method="get" class="table-filters">
+        {% if user_filter or verification_filter or search_filter %}
+          <label for="recordQuery" class="visually-hidden">Search records</label>
+          <input class="form-control"
+                 id="recordQuery"
+                 name="q"
+                 value="{{ request.GET.q }}"
+                 placeholder="Search names, email or skills…">
+        {% endif %}
+        {% if user_filter %}
+          <select name="role" class="form-select" aria-label="Filter role">
+            <option value="">All roles</option>
+            {% include "components/select_options.html" with choices=role_choices selected=request.GET.role %}
+          </select>
+        {% elif status_filter or payment_filter or verification_filter %}
+          <select name="status" class="form-select" aria-label="Filter status">
+            <option value="">All statuses</option>
+            {% if payment_filter %}
+              {% include "components/select_options.html" with choices=payment_status_choices selected=request.GET.status %}
+            {% elif verification_filter %}
+              {% include "components/select_options.html" with choices=verification_status_choices selected=request.GET.status %}
+            {% else %}
+              {% include "components/select_options.html" with choices=service_status_choices selected=request.GET.status %}
+            {% endif %}
+          </select>
+        {% endif %}
+        <button class="btn btn-light">Apply</button>
+        <a class="text-link" href="{{ request.path }}">Reset</a>
+      </form>
+    {% endif %}
+    {% include "components/records_table.html" %}
+    {% include "components/pagination.html" %}
+  </section>
+{% endblock %}

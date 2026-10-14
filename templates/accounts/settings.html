@@ -1,0 +1,45 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="settings-grid">
+    <a class="panel settings-card" href="{% url 'profile' %}">
+      <i aria-hidden="true" class="bi bi-person-circle">
+      </i>
+      <div>
+        <h2>Your profile</h2>
+        <p>Update contact details, your photo and service location.</p>
+      </div>
+      <i aria-hidden="true" class="bi bi-arrow-up-right">
+      </i>
+    </a>
+    <a class="panel settings-card" href="{% url 'password_change' %}">
+      <i aria-hidden="true" class="bi bi-shield-lock">
+      </i>
+      <div>
+        <h2>Password & security</h2>
+        <p>Choose a new password to protect your account.</p>
+      </div>
+      <i aria-hidden="true" class="bi bi-arrow-up-right">
+      </i>
+    </a>
+    <a class="panel settings-card" href="{% url 'notifications' %}">
+      <i aria-hidden="true" class="bi bi-bell">
+      </i>
+      <div>
+        <h2>Your notifications</h2>
+        <p>Catch up with booking and service updates.</p>
+      </div>
+      <i aria-hidden="true" class="bi bi-arrow-up-right">
+      </i>
+    </a>
+    <a class="panel settings-card" href="{% url 'complaint_create' %}">
+      <i aria-hidden="true" class="bi bi-headset">
+      </i>
+      <div>
+        <h2>Get support</h2>
+        <p>Raise a service complaint or ask the administrator for help.</p>
+      </div>
+      <i aria-hidden="true" class="bi bi-arrow-up-right">
+      </i>
+    </a>
+  </div>
+{% endblock %}

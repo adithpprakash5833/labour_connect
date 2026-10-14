@@ -1,0 +1,41 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="profile-edit-layout">
+    <aside class="panel profile-summary">
+      <span class="avatar avatar-xl">
+        {% if user.profile_photo %}
+          <img src="{{ user.profile_photo.url }}" alt="Your profile">
+        {% else %}
+          {{ user.initials }}{% endif %}
+      </span>
+      <h2>{{ user.display_name }}</h2>
+      <p>{{ user.get_role_display }}</p>
+      <span class="category-tag">{{ user.email }}</span>
+      {% if worker_form %}
+        <div class="mt-3">
+          {% include "components/status_badge.html" with status=user.worker_profile.verification_status %}
+        </div>
+      {% endif %}
+      <a class="text-link mt-4 d-block"
+         href="{% url 'password_change' %}">Change password <i aria-hidden="true"
+    class="bi bi-arrow-right">
+        </i>
+      </a>
+    </aside>
+    <div class="panel">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="form-section-title mt-0">Personal information</h2>
+        {% include "components/form_fields.html" %}
+        {% if worker_form %}
+          <h2 class="form-section-title">Professional details</h2>
+          {% include "components/form_fields.html" with form=worker_form %}
+        {% endif %}
+        <button class="btn btn-primary mt-4">
+          Save profile <i aria-hidden="true" class="bi bi-check2">
+          </i>
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

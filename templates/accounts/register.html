@@ -1,0 +1,98 @@
+{% extends "base/base.html" %}
+{% block content %}
+  <section class="container section register-section">
+    <div class="centered section-heading">
+      <div>
+        <div class="eyebrow">LET’S MAKE A CONNECTION</div>
+        <h1>Great work starts with you.</h1>
+        <p>Create an account and find your place in the local community.</p>
+      </div>
+    </div>
+    <div class="register-card panel">
+      <form method="post" enctype="multipart/form-data" id="registrationForm">
+        {% csrf_token %}
+        {% include "components/form_error.html" %}
+        <div class="role-selector">
+          <label class="role-option">
+            <input type="radio"
+                   name="role"
+                   value="CUSTOMER"
+                   {% if form.role.value != 'WORKER' %}checked{% endif %}>
+            <i aria-hidden="true" class="bi bi-search">
+            </i>
+            <strong>I need a professional</strong>
+            <span>Find trusted local skills</span>
+          </label>
+          <label class="role-option">
+            <input type="radio"
+                   name="role"
+                   value="WORKER"
+                   {% if form.role.value == 'WORKER' %}checked{% endif %}>
+            <i aria-hidden="true" class="bi bi-tools">
+            </i>
+            <strong>I offer my services</strong>
+            <span>Connect with local customers</span>
+          </label>
+        </div>
+        {% for error in form.role.errors %}
+          <p class="field-error">{{ error }}</p>
+        {% endfor %}
+        <h2 class="form-section-title">Your account details</h2>
+        <div class="form-grid">
+          {% include "components/field.html" with field=form.first_name %}
+          {% include "components/field.html" with field=form.last_name %}
+          {% include "components/field.html" with field=form.username %}
+          {% include "components/field.html" with field=form.email %}
+          {% include "components/field.html" with field=form.phone %}
+          {% include "components/field.html" with field=form.password1 %}
+          {% include "components/field.html" with field=form.password2 %}
+          {% include "components/field.html" with field=form.address %}
+          {% include "components/field.html" with field=form.latitude %}
+          {% include "components/field.html" with field=form.longitude %}
+          {% include "components/field.html" with field=form.profile_photo %}
+        </div>
+        <div class="location-tools">
+          <button class="btn btn-light" type="button" data-geolocate>
+            <i aria-hidden="true" class="bi bi-geo-alt">
+            </i> Use my location
+          </button>
+          <span data-location-message aria-live="polite">You can always type your address manually.</span>
+        </div>
+        <div data-maps-autocomplete class="maps-autocomplete"></div>
+        <div data-location-map
+             data-map-id="{{ maps_id }}"
+             class="location-map"
+             hidden></div>
+        <section id="workerFields"
+                 {% if form.role.value != 'WORKER' %}hidden{% endif %}>
+          <h2 class="form-section-title">Your professional profile</h2>
+          <div class="info-banner">
+            <i aria-hidden="true" class="bi bi-shield-check">
+            </i> We privately review your documents before you can sign in, appear in search, or accept work.
+          </div>
+          <div class="form-grid">
+            {% include "components/field.html" with field=form.designation %}
+            {% include "components/field.html" with field=form.category %}
+            {% include "components/field.html" with field=form.skills %}
+            {% include "components/field.html" with field=form.experience_years %}
+            {% include "components/field.html" with field=form.service_rate %}
+            {% include "components/field.html" with field=form.working_area %}
+            {% include "components/field.html" with field=form.availability_status %}
+            {% include "components/field.html" with field=form.bio %}
+            {% include "components/field.html" with field=form.identity_document %}
+            {% include "components/field.html" with field=form.skill_document %}
+          </div>
+        </section>
+        <div class="registration-footer">
+          <p>Identity documents remain private. Administrator accounts cannot be registered here.</p>
+          <button class="btn btn-primary">
+            Create account <i aria-hidden="true" class="bi bi-arrow-right">
+            </i>
+          </button>
+        </div>
+      </form>
+      <p class="text-center mt-4 mb-0">Already part of the community? <a href="{% url 'login' %}">Sign in</a>
+      </p>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,11 @@
+<article class="stat-card">
+  <div class="stat-top">
+    <span>{{ stat.0 }}</span>
+    <div class="stat-icon">
+      <i aria-hidden="true" class="bi bi-{{ stat.2 }}">
+      </i>
+    </div>
+  </div>
+  <strong {% if stat.1|stringformat:'s'|length < 6 %}data-counter="{{ stat.1 }}"{% endif %}>{{ stat.1 }}</strong>
+  <small>From your platform activity</small>
+</article>

@@ -1,0 +1,20 @@
+{% include "components/form_error.html" %}
+<div class="form-grid">
+  {% for field in form %}
+    {% include "components/field.html" %}
+  {% endfor %}
+</div>
+{% if form.address %}
+  <div class="location-tools">
+    <button class="btn btn-light" type="button" data-geolocate>
+      <i aria-hidden="true" class="bi bi-geo-alt">
+      </i> Use my current location
+    </button>
+    <span data-location-message aria-live="polite">Location sharing is optional. You can type your address.</span>
+  </div>
+  <div class="maps-autocomplete" data-maps-autocomplete></div>
+  <div class="location-map"
+       data-location-map
+       data-map-id="{{ maps_id }}"
+       hidden></div>
+{% endif %}

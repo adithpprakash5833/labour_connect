@@ -1,0 +1,173 @@
+{% extends "dashboard/base.html" %}
+{% block page_action %}
+  {% if user.role == "CUSTOMER" %}
+    <a class="btn btn-primary" href="{% url 'post_job' %}">
+      <i aria-hidden="true" class="bi bi-plus-lg">
+      </i> Post a job</a>
+  {% elif user.role == "WORKER" %}
+    <a class="btn btn-primary"
+       href="{% url 'available_jobs' %}">Explore jobs <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+      </i>
+    </a>
+  {% else %}
+    <a class="btn btn-primary" href="{% url 'admin_verifications' %}">
+      <i aria-hidden="true" class="bi bi-shield-check">
+      </i> Review workers</a>
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <div class="welcome-banner">
+    <div>
+      <span class="eyebrow">GOOD TO SEE YOU</span>
+      <h2>Welcome back, {{ user.first_name|default:user.username }}.</h2>
+      <p>
+        {% if user.role == "CUSTOMER" %}Your next task is in good hands. Let’s find the right professional.{% elif user.role == "WORKER" %}Great opportunities start with great work. Here’s how you’re doing.{% else %}Keep your community connected, verified and running smoothly.{% endif %}
+      </p>
+    </div>
+    <div class="welcome-symbol">
+      <i aria-hidden="true"
+         class="bi bi-{% if user.role == 'CUSTOMER' %}house-check{% elif user.role == 'WORKER' %}tools{% else %}shield-check{% endif %}">
+      </i>
+    </div>
+  </div>
+  {% for announcement in dashboard_announcements %}
+    <div class="info-banner">
+      <i aria-hidden="true" class="bi bi-megaphone">
+      </i>
+      <div>
+        <strong>{{ announcement.title }}</strong>
+        <div>{{ announcement.message }}</div>
+      </div>
+    </div>
+  {% endfor %}
+  {% if availability_form %}
+    <form class="availability-strip"
+          method="post"
+          action="{% url 'availability' %}">
+      {% csrf_token %}
+      <div>
+        <span class="availability availability-{{ user.worker_profile.availability_status|lower }}">● {{ user.worker_profile.get_availability_status_display }}</span>
+        <small>Customers see this on your profile.</small>
+      </div>
+      <label for="id_availability_status">Availability</label>
+      {{ availability_form.availability_status }}<button class="btn btn-sm btn-primary">Update</button>
+    </form>
+  {% endif %}
+  <div class="stats-grid">
+    {% for stat in stats %}
+      {% include "components/dashboard_stat_card.html" %}
+    {% endfor %}
+  </div>
+  <div class="charts-grid">
+    <section class="panel chart-panel">
+      <div class="panel-heading">
+        <h2>{{ chart_title }}</h2>
+        <span class="small text-muted">Last six months</span>
+      </div>
+      <div class="chart-container">
+        <canvas data-chart="mainChart"
+                data-chart-type="bar"
+                aria-label="{{ chart_title }}"
+                role="img">
+        </canvas>
+      </div>
+      {{ chart|json_script:'mainChart' }}
+    </section>
+    <section class="panel chart-panel">
+      <div class="panel-heading">
+        <h2>{{ chart_secondary_title }}</h2>
+      </div>
+      <div class="chart-container">
+        <canvas data-chart="secondaryChart"
+                data-chart-type="doughnut"
+                aria-label="{{ chart_secondary_title }}"
+                role="img">
+        </canvas>
+      </div>
+      {{ chart_secondary|json_script:'secondaryChart' }}
+    </section>
+  </div>
+  {% if chart_extra %}
+    <section class="panel chart-panel mb-4">
+      <h2>{{ chart_extra_title }}</h2>
+      <div class="chart-container">
+        <canvas data-chart="extraChart"
+                data-chart-type="line"
+                aria-label="{{ chart_extra_title }}"
+                role="img">
+        </canvas>
+      </div>
+      {{ chart_extra|json_script:'extraChart' }}
+    </section>
+  {% endif %}
+  <section class="panel records-panel">
+    <div class="panel-heading">
+      <h2>Recent bookings</h2>
+      <a class="text-link"
+         href="{% if user.role == 'CUSTOMER' %}
+{% url 'customer_bookings' %}
+{% elif user.role == 'WORKER' %}
+{% url 'worker_bookings' %}
+{% else %}
+{% url 'admin_bookings' %}
+{% endif %}">View all <i aria-hidden="true" class="bi bi-arrow-right">
+        </i>
+      </a>
+    </div>
+    {% include "components/records_table.html" with rows=recent_rows %}
+  </section>
+  {% if recent_job_rows %}
+    <section class="panel records-panel mt-4">
+      <div class="panel-heading">
+        <h2>Recent jobs</h2>
+        <a class="text-link"
+           href="{% if user.role == 'CUSTOMER' %}
+{% url 'customer_jobs' %}
+{% else %}
+{% url 'admin_jobs' %}
+{% endif %}">View all</a>
+      </div>
+      {% include "components/records_table.html" with rows=recent_job_rows %}
+    </section>
+  {% endif %}
+  <section class="panel mt-4">
+    <div class="panel-heading">
+      <h2>Latest updates</h2>
+      <a class="text-link"
+         href="{% url 'notifications' %}">All notifications <i aria-hidden="true"
+    class="bi bi-arrow-right">
+        </i>
+      </a>
+    </div>
+    {% for notice in recent_notifications %}
+      {% include "components/notification_item.html" %}
+    {% empty %}
+      {% include "components/empty_state.html" with empty_title="You’re all caught up" empty_message="We’ll keep you updated when something changes." empty_icon="bell" %}
+    {% endfor %}
+  </section>
+  {% if recent_reviews %}
+    <section class="panel mt-4">
+      <h2>Latest reviews</h2>
+      {% for review in recent_reviews %}
+        <article class="review-item">
+          <strong>{{ review.customer.display_name }} · {{ review.rating }}/5</strong>
+          <p>{{ review.text }}</p>
+        </article>
+      {% endfor %}
+    </section>
+  {% endif %}
+  {% if recommended %}
+    <section class="mt-5">
+      <div class="panel-heading">
+        <h2>Professionals for your next task</h2>
+        <a class="text-link" href="{% url 'find_workers' %}">Explore all</a>
+      </div>
+      <div class="workers-grid">
+        {% for worker in recommended %}
+          {% include "components/worker_card.html" %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

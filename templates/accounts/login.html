@@ -1,0 +1,55 @@
+{% extends "base/base.html" %}
+{% block content %}
+  <section class="auth-section container">
+    <div class="auth-story">
+      <div class="eyebrow">WELCOME BACK</div>
+      <h1>
+        Your next connection
+        <br>
+        starts here.
+      </h1>
+      <p>Good work, trusted people, and everything you need to keep it moving.</p>
+      <div class="auth-feature">
+        <i aria-hidden="true" class="bi bi-shield-check">
+        </i> Verified worker profiles
+      </div>
+      <div class="auth-feature">
+        <i aria-hidden="true" class="bi bi-activity">
+        </i> Live service status updates
+      </div>
+      <div class="auth-feature">
+        <i aria-hidden="true" class="bi bi-chat-heart">
+        </i> Reviews from completed work
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="eyebrow">LET’S GET TO WORK</div>
+      <h2>Sign in to Labour Connect</h2>
+      <p>Welcome back. Enter your account details.</p>
+      {% if throttle_message %}
+        <div class="form-error" role="alert">{{ throttle_message }}</div>
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        {% include "components/form_fields.html" %}
+        <div class="auth-options">
+          <span>
+            <i aria-hidden="true" class="bi bi-lock">
+            </i> Secure sign in</span>
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+          </div>
+          <button class="btn btn-primary w-100 mt-3">
+            Sign in <i aria-hidden="true" class="bi bi-arrow-right">
+            </i>
+          </button>
+        </form>
+        <div class="auth-divider"></div>
+        <p class="text-center mb-0">New to Labour Connect? <a href="{% url 'register' %}">Create an account</a>
+        </p>
+        <div class="auth-note">
+          <i aria-hidden="true" class="bi bi-info-circle">
+          </i> Workers can sign in after administrator approval.
+        </div>
+      </div>
+    </section>
+{% endblock %}

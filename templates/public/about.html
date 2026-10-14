@@ -1,0 +1,32 @@
+{% extends "base/base.html" %}
+{% block content %}
+  <section class="public-page-heading">
+    <div class="container">
+      <div class="eyebrow">OUR PURPOSE</div>
+      <h1>
+        Local skills.
+        <br>
+        Stronger communities.
+      </h1>
+      <p>Labour Connect helps people find reliable local work and the professionals to do it.</p>
+    </div>
+  </section>
+  <section class="section container narrow">
+    <h2>A better way to find a helping hand.</h2>
+    <p class="lead">Finding an electrician, a painter, or an extra pair of hands often starts with a neighbour’s number or a message in a group chat. We bring that discovery into one clear, accessible place.</p>
+    <div class="panel mt-4">
+      <h3>How trust works here</h3>
+      <p>Workers submit professional details and private verification documents. An administrator reviews each profile before it appears in search or can accept work. Verification is a platform review, and customers should still discuss the scope of work before booking.</p>
+      <p>Reviews come from completed services. Rates, availability and work status stay visible so everyone can make informed decisions.</p>
+    </div>
+    <div class="panel mt-4">
+      <h3>An MCA mini project with working workflows</h3>
+      <p>This academic marketplace demonstrates role-based access, verification, local discovery, bookings, open jobs, payment recording and service reviews. Demo online payments simulate a successful record; they do not collect or transfer money.</p>
+    </div>
+    <div class="d-flex gap-3 mt-4 flex-wrap">
+      <a class="btn btn-primary" href="{% url 'find_workers' %}">Find a professional</a>
+      <a class="btn btn-outline-primary"
+         href="{% url 'register' %}?role=worker">Offer your services</a>
+    </div>
+  </section>
+{% endblock %}

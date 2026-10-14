@@ -1,0 +1,47 @@
+<header class="public-header">
+  <nav class="navbar navbar-expand-lg container"
+       aria-label="Main navigation">
+    <a class="brand" href="{% url 'home' %}">
+      <span class="brand-mark">
+        <i aria-hidden="true" class="bi bi-intersect">
+        </i>
+      </span>
+      <span>labour<span class="brand-light">connect</span>
+        <small>LOCAL SKILLS. REAL CONNECTIONS.</small>
+      </span>
+    </a>
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#publicNav"
+            aria-controls="publicNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <i aria-hidden="true" class="bi bi-list">
+      </i>
+    </button>
+    <div class="collapse navbar-collapse" id="publicNav">
+      <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <a class="nav-link" href="{% url 'home' %}">Home</a>
+        <a class="nav-link" href="{% url 'services' %}">Services</a>
+        <a class="nav-link" href="{% url 'find_workers' %}">Find workers</a>
+        <a class="nav-link" href="{% url 'home' %}#how-it-works">How it works</a>
+        <a class="nav-link" href="{% url 'about' %}">About</a>
+        {% if user.is_authenticated %}
+          <a class="btn btn-primary"
+             href="{% url 'dashboard' %}">My dashboard <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+            </i>
+          </a>
+        {% else %}
+          <a class="nav-link login-link" href="{% url 'login' %}">Log in</a>
+          <a class="btn btn-primary"
+             href="{% url 'register' %}">Get started <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+            </i>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</header>

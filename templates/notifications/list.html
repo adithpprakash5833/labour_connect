@@ -1,0 +1,29 @@
+{% extends "dashboard/base.html" %}
+{% block page_action %}
+  <form method="post"
+        action="{% url 'notifications_read_all' %}"
+        data-notification-form>
+    {% csrf_token %}
+    <button class="btn btn-light">
+      <i aria-hidden="true" class="bi bi-check2-all">
+      </i> Mark all as read
+    </button>
+  </form>
+{% endblock %}
+{% block content %}
+  <div class="notification-tabs">
+    <a class="{% if not request.GET.unread %}active{% endif %}"
+       href="{% url 'notifications' %}">All updates</a>
+    <a class="{% if request.GET.unread %}active{% endif %}"
+       href="{% url 'notifications' %}?unread=1">Unread <span data-unread-count>{{ unread_count }}</span>
+    </a>
+  </div>
+  <section class="panel">
+    {% for notice in notifications %}
+      {% include "components/notification_item.html" %}
+    {% empty %}
+      {% include "components/empty_state.html" with empty_title="You’re all caught up" empty_message="New updates will appear here when a service or account action happens." empty_icon="bell" %}
+    {% endfor %}
+    {% include "components/pagination.html" %}
+  </section>
+{% endblock %}

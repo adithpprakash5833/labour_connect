@@ -1,0 +1,26 @@
+{% extends "dashboard/base.html" %}
+{% load platform_tags %}
+{% block content %}
+  <section class="panel">
+    {% for review in reviews %}
+      <article class="review-item">
+        <div class="review-heading">
+          <span class="avatar avatar-sm">{{ review.customer.initials }}</span>
+          <div>
+            <strong>{{ review.customer.display_name }} → {{ review.worker.user.display_name }}</strong>
+            <span class="stars">{{ review.rating|stars }}</span>
+          </div>
+          <small>{{ review.created_at|date:'d M Y' }}</small>
+        </div>
+        <p>{{ review.text }}</p>
+        <a class="text-link small"
+           href="{% url 'service_detail' review.service.kind review.service.pk %}">
+          <i aria-hidden="true" class="bi bi-check2-circle">
+          </i> {{ review.service.title }} · Completed service</a>
+        </article>
+    {% empty %}
+      {% include "components/empty_state.html" with empty_title="Your reviews start here" empty_message="Complete a service to share or receive feedback." empty_icon="star" %}
+    {% endfor %}
+    {% include "components/pagination.html" %}
+  </section>
+{% endblock %}

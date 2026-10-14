@@ -1,0 +1,49 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="{% url 'home' %}">
+          <span class="brand-mark">
+            <i aria-hidden="true" class="bi bi-intersect">
+            </i>
+          </span>
+          <span>labour<span class="brand-light">connect</span>
+          </span>
+        </a>
+        <p>
+          Good work starts with the right connection.
+          <br>
+          Find local skills you can count on.
+        </p>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <a href="{% url 'services' %}">Service categories</a>
+        <a href="{% url 'find_workers' %}">Find professionals</a>
+        <a href="{% url 'about' %}">Our mission</a>
+      </div>
+      <div>
+        <h3>For you</h3>
+        <a href="{% url 'register' %}">Become a customer</a>
+        <a href="{% url 'register' %}?role=worker">Join as a worker</a>
+        <a href="{% url 'login' %}">Sign in</a>
+      </div>
+      <div>
+        <h3>Support</h3>
+        <a href="{% url 'complaint_create' %}">Contact support</a>
+        <a href="{% url 'password_reset' %}">Reset password</a>
+        <p>
+          Academic service marketplace.
+          <br>
+          Demo online payments are simulated.
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© {% now "Y" %} Labour Connect</span>
+      <span>Built for stronger local communities <i aria-hidden="true" class="bi bi-heart">
+        </i>
+      </span>
+    </div>
+  </div>
+</footer>

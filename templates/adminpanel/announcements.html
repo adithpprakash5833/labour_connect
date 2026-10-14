@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="detail-layout">
+    <div class="panel">
+      <h2>Published announcements</h2>
+      {% for item in announcements %}
+        <article class="announcement-item">
+          <span class="category-tag">{{ item.get_audience_display }}</span>
+          <h3>{{ item.title }}</h3>
+          <p class="preserve-lines">{{ item.message }}</p>
+          <small>{{ item.created_by.display_name }} · {{ item.created_at|date:'d M Y, h:i A' }}</small>
+        </article>
+      {% empty %}
+        {% include "components/empty_state.html" with empty_title="No announcements yet" empty_message="Publish an update to notify your selected audience." empty_icon="megaphone" %}
+      {% endfor %}
+      {% include "components/pagination.html" %}
+    </div>
+    <aside class="panel">
+      <h2>Create announcement</h2>
+      <form method="post"
+            data-confirm="Publish this announcement and notify the selected audience?">
+        {% csrf_token %}
+        {% include "components/form_fields.html" %}
+        <button class="btn btn-primary mt-3">Publish announcement</button>
+      </form>
+    </aside>
+  </div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% load platform_tags %}
+<article class="worker-card reveal">
+  <div class="worker-card-top">
+    <span class="category-tag">{{ worker.category.name }}</span>
+    <span class="verified-icon" title="Administrator verified">
+      <i aria-hidden="true" class="bi bi-patch-check-fill">
+      </i>
+    </span>
+  </div>
+  <div class="worker-identity">
+    <span class="avatar avatar-lg">
+      {% if worker.user.profile_photo %}
+        <img src="{{ worker.user.profile_photo.url }}"
+             alt="{{ worker.user.display_name }}"
+             loading="lazy">
+      {% else %}
+        {{ worker.user.initials }}{% endif %}
+    </span>
+    <div>
+      <h3>
+        <a href="{% url 'worker_detail' worker.pk %}">{{ worker.user.display_name }}</a>
+      </h3>
+      <p>{{ worker.designation }}</p>
+      <div class="worker-rating">
+        <span class="stars">★</span>
+        <strong>{{ worker.rating|default_if_none:0|floatformat:1 }}</strong>
+        <span>({{ worker.review_count }} reviews)</span>
+      </div>
+    </div>
+  </div>
+  <div class="worker-meta">
+    <span>
+      <i aria-hidden="true" class="bi bi-geo-alt">
+      </i> {{ worker.working_area }}</span>
+      <span>
+        <i aria-hidden="true" class="bi bi-briefcase">
+        </i> {{ worker.experience_years }} years experience</span>
+        {% if worker.distance != None %}
+          <span>
+            <i aria-hidden="true" class="bi bi-pin-map">
+            </i> {{ worker.distance }} km away</span>
+        {% endif %}
+      </div>
+      <p class="worker-skills">{{ worker.skills|truncatechars:90 }}</p>
+      <div class="worker-card-bottom">
+        <div>
+          <strong>₹{{ worker.service_rate|floatformat:0 }}</strong>
+          <span>/ hour</span>
+          <small class="availability availability-{{ worker.availability_status|lower }}">● {{ worker.get_availability_status_display }}</small>
+        </div>
+        <a class="btn btn-outline-primary btn-sm"
+           href="{% url 'worker_detail' worker.pk %}">View profile <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+          </i>
+        </a>
+      </div>
+      {% if user.role == "CUSTOMER" and worker.availability_status == "AVAILABLE" %}
+        <a class="worker-book-link"
+           href="{% url 'book_worker' worker.pk %}">Book this professional <i aria-hidden="true"
+    class="bi bi-arrow-right">
+          </i>
+        </a>
+      {% endif %}
+    </article>

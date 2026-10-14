@@ -1,0 +1,42 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="detail-layout">
+    <section class="panel">
+      <h2>Your document vault</h2>
+      <p class="text-muted">Only you and administrators can download these files.</p>
+      {% for document in documents %}
+        <div class="document-row">
+          <i aria-hidden="true" class="bi bi-file-earmark-lock">
+          </i>
+          <div>
+            <strong>{{ document.get_document_type_display }}</strong>
+            <small>
+              {{ document.uploaded_at|date:'d M Y' }}{% if document.admin_note %} · {{ document.admin_note }}{% endif %}
+            </small>
+          </div>
+          {% include "components/status_badge.html" with status=document.verification_status %}
+          <a class="icon-button"
+             href="{% url 'document_download' document.pk %}"
+             aria-label="Download {{ document.get_document_type_display }}">
+            <i aria-hidden="true" class="bi bi-download">
+            </i>
+          </a>
+        </div>
+      {% empty %}
+        {% include "components/empty_state.html" with empty_title="No documents yet" empty_icon="file-earmark-lock" %}
+      {% endfor %}
+    </section>
+    <section class="panel">
+      <h2>Upload a document</h2>
+      <p>PDF, PNG or JPEG. Maximum 5 MB.</p>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% include "components/form_fields.html" %}
+        <button class="btn btn-primary mt-3">
+          <i aria-hidden="true" class="bi bi-upload">
+          </i> Upload privately
+        </button>
+      </form>
+    </section>
+  </div>
+{% endblock %}

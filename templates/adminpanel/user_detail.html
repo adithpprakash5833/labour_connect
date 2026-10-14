@@ -1,0 +1,49 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="panel form-panel">
+    <div class="participant">
+      <span class="avatar avatar-lg">{{ account.initials }}</span>
+      <div>
+        <h2>{{ account.display_name }}</h2>
+        <p>{{ account.get_role_display }} · @{{ account.username }}</p>
+      </div>
+    </div>
+    {% if account.is_active %}
+      {% include "components/status_badge.html" with status="ACTIVE" %}
+    {% else %}
+      {% include "components/status_badge.html" with status="INACTIVE" %}
+    {% endif %}
+    <div class="detail-grid">
+      <div>
+        <span>Email</span>
+        <strong>{{ account.email }}</strong>
+      </div>
+      <div>
+        <span>Phone</span>
+        <strong>{{ account.phone|default:'Not provided' }}</strong>
+      </div>
+      <div>
+        <span>Address</span>
+        <strong>{{ account.address|default:'Not provided' }}</strong>
+      </div>
+      <div>
+        <span>Joined</span>
+        <strong>{{ account.date_joined|date:'d M Y' }}</strong>
+      </div>
+    </div>
+    {% if account.worker_profile %}
+      <a class="btn btn-primary mt-4"
+         href="{% url 'verify_worker' account.worker_profile.pk %}">Review worker profile</a>
+    {% endif %}
+    {% if account.role != "ADMINISTRATOR" %}
+      <form class="mt-4"
+            method="post"
+            action="{% url 'toggle_user' account.pk %}"
+            data-confirm="{% if account.is_active %}Deactivate{% else %}Activate{% endif %} this account? Their service history will be preserved.">
+        {% csrf_token %}
+        <button class="btn {% if account.is_active %}btn-outline-danger{% else %}btn-outline-primary{% endif %}">
+        {% if account.is_active %}Deactivate{% else %}Activate{% endif %} account</button>
+      </form>
+    {% endif %}
+  </div>
+{% endblock %}

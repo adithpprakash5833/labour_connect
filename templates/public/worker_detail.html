@@ -1,0 +1,128 @@
+{% extends "base/base.html" %}
+{% load platform_tags %}
+{% block content %}
+  <section class="container section">
+    <a class="back-link" href="{% url 'find_workers' %}">
+      <i aria-hidden="true" class="bi bi-arrow-left">
+      </i> Back to professionals</a>
+      <div class="profile-layout">
+        <article>
+          <div class="panel professional-header">
+            <span class="avatar avatar-xl">
+              {% if worker.user.profile_photo %}
+                <img src="{{ worker.user.profile_photo.url }}"
+                     alt="{{ worker.user.display_name }}">
+              {% else %}
+                {{ worker.user.initials }}{% endif %}
+            </span>
+            <div>
+              <span class="verified-label">
+                <i aria-hidden="true" class="bi bi-patch-check-fill">
+                </i> Verified professional</span>
+                <h1>{{ worker.user.display_name }}</h1>
+                <p>{{ worker.designation }} · {{ worker.category.name }}</p>
+                <div class="worker-rating">
+                  <span class="stars">{{ worker.average_rating|stars }}</span>
+                  <strong>{{ worker.average_rating|floatformat:1 }}</strong>
+                  <span>{{ worker.total_reviews }} reviews</span>
+                </div>
+                <div class="worker-meta mt-3">
+                  <span>
+                    <i aria-hidden="true" class="bi bi-geo-alt">
+                    </i> {{ worker.working_area }}</span>
+                    <span>
+                      <i aria-hidden="true" class="bi bi-briefcase">
+                      </i> {{ worker.experience_years }} years experience</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel mt-4">
+                  <h2>About this professional</h2>
+                  <p class="preserve-lines">{{ worker.bio }}</p>
+                  <h3 class="mt-4">Skills & expertise</h3>
+                  <p>{{ worker.skills }}</p>
+                  <div class="profile-metrics">
+                    <div>
+                      <strong>{{ worker.experience_years }}</strong>
+                      <span>Years of experience</span>
+                    </div>
+                    <div>
+                      <strong>{{ worker.total_completed_jobs }}</strong>
+                      <span>Completed services</span>
+                    </div>
+                    <div>
+                      <strong>{{ worker.average_rating|floatformat:1 }}</strong>
+                      <span>Average rating</span>
+                    </div>
+                  </div>
+                  <p class="small text-muted mt-3">Working area: {{ worker.working_area }}. Discuss the exact service address in your booking request.</p>
+                  {% if worker.user.latitude != None and worker.user.longitude != None %}
+                    <div data-location-map
+                         data-lat="{{ worker.user.latitude }}"
+                         data-lng="{{ worker.user.longitude }}"
+                         data-map-id="{{ maps_id }}"
+                         class="location-map"
+                         hidden></div>
+                  {% endif %}
+                </div>
+                <div class="panel mt-4">
+                  <h2>
+                    Customer reviews <span class="text-muted">({{ worker.total_reviews }})</span>
+                  </h2>
+                  {% for review in reviews %}
+                    <article class="review-item">
+                      <div class="review-heading">
+                        <span class="avatar avatar-sm">{{ review.customer.initials }}</span>
+                        <div>
+                          <strong>{{ review.customer.display_name }}</strong>
+                          <span class="stars">{{ review.rating|stars }}</span>
+                        </div>
+                        <small>{{ review.created_at|date:'d M Y' }}</small>
+                      </div>
+                      <p>{{ review.text }}</p>
+                      <span class="small text-muted">
+                        <i aria-hidden="true" class="bi bi-check2-circle">
+                        </i> Completed service review</span>
+                      </article>
+                  {% empty %}
+                    {% include "components/empty_state.html" with empty_title="A fresh start" empty_message="Reviews will appear after customers complete a service." empty_icon="star" %}
+                  {% endfor %}
+                  {% include "components/pagination.html" %}
+                </div>
+              </article>
+              <aside class="booking-panel panel">
+                <div class="eyebrow">READY WHEN YOU ARE</div>
+                <div class="professional-rate">
+                  ₹{{ worker.service_rate|floatformat:0 }}<span>/ hour</span>
+                </div>
+                <p>Listed hourly rate. Agree your total budget in the booking request.</p>
+                {% include "components/status_badge.html" with status=worker.availability_status %}
+                <hr>
+                {% if worker.availability_status == "AVAILABLE" %}
+                  {% if user.is_authenticated and user.role == "CUSTOMER" %}
+                    <a class="btn btn-primary w-100"
+                       href="{% url 'book_worker' worker.pk %}">Book this worker <i aria-hidden="true"
+    class="bi bi-arrow-right">
+                      </i>
+                    </a>
+                  {% elif not user.is_authenticated %}
+                    <a class="btn btn-primary w-100" href="{% url 'login' %}">Sign in to book</a>
+                    <a class="text-link d-block mt-3 text-center"
+                       href="{% url 'register' %}">Create a customer account</a>
+                  {% else %}
+                    <p class="small text-muted">Booking is available to customer accounts.</p>
+                  {% endif %}
+                {% else %}
+                  <p>This worker isn’t accepting new bookings right now.</p>
+                {% endif %}
+                <div class="booking-assurance">
+                  <i aria-hidden="true" class="bi bi-shield-check">
+                  </i>
+                  <span>Private documents reviewed.
+                    <br>
+                  Contact details are shared in confirmed platform work.</span>
+                </div>
+              </aside>
+            </div>
+          </section>
+{% endblock %}

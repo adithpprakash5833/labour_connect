@@ -1,0 +1,12 @@
+MySQL process running: True
+MySQL connection verified: 8.4.9
+Operations to perform:
+  Apply all migrations: accounts, admin, adminpanel, auth, complaints, contenttypes, core, jobs, notifications, payments, reviews, sessions, workers
+Running migrations:
+  No migrations to apply.
+Service categories are ready.
+Demo records already exist; passwords were not changed.
+System check identified no issues (0 silenced).
+No changes detected
+
+130 static files copied to 'C:\Users\User\Documents\Codex\2026-10-06\files-pasted-by-the-user-you\outputs\labour_connect\staticfiles', 12 unmodified.

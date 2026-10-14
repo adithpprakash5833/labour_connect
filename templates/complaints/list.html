@@ -1,0 +1,44 @@
+{% extends "dashboard/base.html" %}
+{% block page_action %}
+  <a class="btn btn-primary" href="{% url 'complaint_create' %}">
+    <i aria-hidden="true" class="bi bi-plus-lg">
+    </i> Raise a complaint</a>
+{% endblock %}
+{% block content %}
+  <div class="panel">
+    <form method="get" class="table-filters">
+      <select class="form-select" name="status" aria-label="Complaint status">
+        <option value="">All statuses</option>
+        <option value="PENDING"
+                {% if request.GET.status == 'PENDING' %}selected{% endif %}>Pending</option>
+        <option value="IN_REVIEW"
+                {% if request.GET.status == 'IN_REVIEW' %}selected{% endif %}>In review</option>
+        <option value="RESOLVED"
+                {% if request.GET.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+        <option value="CLOSED"
+                {% if request.GET.status == 'CLOSED' %}selected{% endif %}>Closed</option>
+      </select>
+      <button class="btn btn-light">Apply</button>
+    </form>
+    {% for complaint in complaints %}
+      <a class="complaint-row"
+         href="{% url 'complaint_detail' complaint.pk %}">
+        <div class="complaint-icon">
+          <i aria-hidden="true" class="bi bi-chat-square-text">
+          </i>
+        </div>
+        <div class="flex-grow-1">
+          <h2>{{ complaint.subject }}</h2>
+          <p>{{ complaint.description|truncatechars:130 }}</p>
+          <small>{{ complaint.created_by.display_name }} · {{ complaint.created_at|date:'d M Y' }}</small>
+        </div>
+        {% include "components/status_badge.html" with status=complaint.status %}
+        <i aria-hidden="true" class="bi bi-arrow-up-right">
+        </i>
+      </a>
+    {% empty %}
+      {% include "components/empty_state.html" with empty_title="No complaints to show" empty_message="If a service needs attention, contact support here." empty_icon="chat-square-heart" %}
+    {% endfor %}
+    {% include "components/pagination.html" %}
+  </div>
+{% endblock %}

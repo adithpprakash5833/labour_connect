@@ -1,0 +1,105 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <div class="detail-layout">
+    <div>
+      <section class="panel">
+        <div class="professional-header">
+          <span class="avatar avatar-lg">
+            {% if worker.user.profile_photo %}
+              <img src="{{ worker.user.profile_photo.url }}" alt="">
+            {% else %}
+              {{ worker.user.initials }}{% endif %}
+          </span>
+          <div>
+            <h2>{{ worker.user.display_name }}</h2>
+            <p>{{ worker.designation }} · {{ worker.category.name }}</p>
+            {% include "components/status_badge.html" with status=worker.verification_status %}
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div>
+            <span>Email</span>
+            <strong>{{ worker.user.email }}</strong>
+          </div>
+          <div>
+            <span>Phone</span>
+            <strong>{{ worker.user.phone }}</strong>
+          </div>
+          <div>
+            <span>Experience</span>
+            <strong>{{ worker.experience_years }} years</strong>
+          </div>
+          <div>
+            <span>Hourly rate</span>
+            <strong>₹{{ worker.service_rate }}</strong>
+          </div>
+          <div>
+            <span>Working area</span>
+            <strong>{{ worker.working_area }}</strong>
+          </div>
+          <div>
+            <span>Address</span>
+            <strong>{{ worker.user.address }}</strong>
+          </div>
+          <div>
+            <span>Coordinates</span>
+            <strong>{{ worker.user.latitude|default:'Not shared' }}, {{ worker.user.longitude|default:'Not shared' }}</strong>
+          </div>
+          <div>
+            <span>Availability</span>
+            <strong>{{ worker.get_availability_status_display }}</strong>
+          </div>
+        </div>
+        <h3 class="mt-4">Skills</h3>
+        <p>{{ worker.skills }}</p>
+        <h3>Professional bio</h3>
+        <p class="preserve-lines">{{ worker.bio }}</p>
+      </section>
+      <section class="panel mt-4">
+        <h2>Verification documents</h2>
+        {% for document in worker.documents.all %}
+          <div class="document-row">
+            <i aria-hidden="true" class="bi bi-file-earmark-lock">
+            </i>
+            <div>
+              <strong>{{ document.get_document_type_display }}</strong>
+              <small>{{ document.uploaded_at|date:'d M Y' }}</small>
+            </div>
+            {% include "components/status_badge.html" with status=document.verification_status %}
+            <a class="btn btn-light btn-sm"
+               href="{% url 'document_download' document.pk %}">Download</a>
+          </div>
+        {% empty %}
+          <p class="text-muted">No verification documents submitted.</p>
+        {% endfor %}
+      </section>
+      <section class="panel mt-4">
+        <h2>Decision history</h2>
+        {% for event in worker.verification_history.all %}
+          <div class="history-event">
+            {% include "components/status_badge.html" with status=event.status %}
+            <strong>{{ event.administrator.display_name }}</strong>
+            <span>{{ event.created_at|date:'d M Y, h:i A' }}</span>
+            <p>{{ event.reason|default:'No additional note.' }}</p>
+          </div>
+        {% empty %}
+          <p class="text-muted">No decisions recorded yet.</p>
+        {% endfor %}
+      </section>
+    </div>
+    <aside class="panel">
+      <h2>Make a decision</h2>
+      <p>Review the profile and documents before approving. A rejection requires a reason.</p>
+      <form method="post"
+            data-confirm="Save this verification decision and notify the worker?">
+        {% csrf_token %}
+        {% include "components/form_fields.html" %}
+        <button class="btn btn-primary w-100 mt-3">Save decision</button>
+      </form>
+      <a class="text-link mt-4 d-block"
+         href="{% url 'admin_user_detail' worker.user.pk %}">Account activation controls <i aria-hidden="true" class="bi bi-arrow-right">
+        </i>
+      </a>
+    </aside>
+  </div>
+{% endblock %}

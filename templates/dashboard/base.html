@@ -1,0 +1,137 @@
+{% extends "base/base.html" %}
+{% block layout %}
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Dashboard navigation">
+      <a class="brand" href="{% url 'home' %}">
+        <span class="brand-mark">
+          <i aria-hidden="true" class="bi bi-intersect">
+          </i>
+        </span>
+        <span>labour<span class="brand-light">connect</span>
+        </span>
+      </a>
+      <div class="workspace-label">{{ user.get_role_display }} workspace</div>
+      <nav class="sidebar-nav">
+        {% for item in sidebar_items %}
+          <a href="{{ item.url }}"
+             class="sidebar-link {% if item.active %}active{% endif %}"
+             {% if item.active %}aria-current="page"{% endif %}>
+            <i aria-hidden="true" class="bi bi-{{ item.icon }}">
+            </i>
+            {{ item.label }}{% if item.label == "Notifications" and unread_count %}
+            <span class="nav-count" data-unread-count>{{ unread_count }}</span>
+        {% endif %}
+      </a>
+{% endfor %}
+</nav>
+<div class="sidebar-bottom">
+  <div class="help-card">
+    <i aria-hidden="true" class="bi bi-headset">
+    </i>
+    <strong>Need a hand?</strong>
+    <p>We’re here to help with your service.</p>
+    <a href="{% url 'complaint_create' %}">Contact support <i aria-hidden="true" class="bi bi-arrow-right">
+      </i>
+    </a>
+  </div>
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="sidebar-link logout-link">
+      <i aria-hidden="true" class="bi bi-box-arrow-left">
+      </i>Log out
+    </button>
+  </form>
+</div>
+</aside>
+<button class="sidebar-overlay" aria-label="Close navigation" hidden></button>
+<div class="workspace">
+  <header class="workspace-header">
+    <div class="d-flex align-items-center gap-3">
+      <button class="icon-button sidebar-toggle"
+              aria-label="Open navigation"
+              aria-controls="sidebar"
+              aria-expanded="false">
+        <i aria-hidden="true" class="bi bi-list">
+        </i>
+      </button>
+      <div class="breadcrumb-label">Workspace <span>/</span> {{ title|default:'Overview' }}</div>
+    </div>
+    <div class="header-tools">
+      <a class="browse-link"
+         href="{% url 'find_workers' %}">Explore professionals <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+        </i>
+      </a>
+      <div class="dropdown">
+        <button class="icon-button notification-button"
+                data-bs-toggle="dropdown"
+                aria-label="Notifications"
+                aria-expanded="false">
+          <i aria-hidden="true" class="bi bi-bell">
+          </i>
+          {% if unread_count %}
+            <span class="notification-count" data-unread-count>{{ unread_count }}</span>
+          {% endif %}
+        </button>
+        <div class="dropdown-menu dropdown-menu-end notification-menu">
+          <div class="dropdown-heading">Notifications <a href="{% url 'notifications' %}">View all</a>
+          </div>
+          {% for notice in nav_notifications %}
+            <a class="notification-preview" href="{% url 'notifications' %}">
+              <strong>{{ notice.title }}</strong>
+              <span>{{ notice.message|truncatechars:80 }}</span>
+              <small>{{ notice.created_at|timesince }} ago</small>
+            </a>
+          {% empty %}
+            <p class="p-3 mb-0 text-muted">You’re all caught up.</p>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="dropdown">
+        <button class="profile-trigger"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+          <span class="avatar avatar-sm">
+            {% if user.profile_photo %}
+              <img src="{{ user.profile_photo.url }}" alt="">
+            {% else %}
+              {{ user.initials }}{% endif %}
+          </span>
+          <span class="profile-trigger-text">
+            {{ user.first_name|default:user.username }}<small> {{ user.get_role_display }}</small>
+          </span>
+          <i aria-hidden="true" class="bi bi-chevron-down">
+          </i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+          <a class="dropdown-item" href="{% url 'profile' %}">My profile</a>
+          <a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
+          <a class="dropdown-item" href="{% url 'password_change' %}">Change password</a>
+          <div class="dropdown-divider"></div>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="dropdown-item">Log out</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="workspace-main">
+    <div class="page-heading">
+      <div>
+        <div class="eyebrow">LABOUR CONNECT / {{ user.get_role_display|upper }}</div>
+        <h1>{{ title|default:'Your workspace' }}</h1>
+        {% if subtitle %}
+          <p>{{ subtitle }}</p>
+        {% endif %}
+      </div>
+      {% block page_action %}{% endblock %}
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="workspace-footer">
+    Labour Connect <span>Local skills. Real connections.</span>
+  </footer>
+</div>
+</div>
+{% endblock %}

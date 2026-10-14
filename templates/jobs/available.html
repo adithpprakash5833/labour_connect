@@ -1,0 +1,105 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <form class="panel job-filters" method="get">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="jobCategory">Category</label>
+        <select class="form-select" name="category" id="jobCategory">
+          <option value="">All categories</option>
+          {% for category in categories %}
+            <option value="{{ category.slug }}"
+                    {% if request.GET.category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="jobLocation">Location</label>
+        <input class="form-control"
+               id="jobLocation"
+               name="location"
+               value="{{ request.GET.location }}"
+               placeholder="City or area">
+      </div>
+      <div class="form-field">
+        <label for="jobMin">Minimum budget (₹)</label>
+        <input class="form-control"
+               id="jobMin"
+               type="number"
+               min="0"
+               name="min_budget"
+               value="{{ request.GET.min_budget }}">
+      </div>
+      <div class="form-field">
+        <label for="jobMax">Maximum budget (₹)</label>
+        <input class="form-control"
+               id="jobMax"
+               type="number"
+               min="0"
+               name="max_budget"
+               value="{{ request.GET.max_budget }}">
+      </div>
+      <div class="form-field">
+        <label for="jobDate">Job date</label>
+        <input class="form-control"
+               id="jobDate"
+               type="date"
+               name="date"
+               value="{{ request.GET.date }}">
+      </div>
+      <div class="form-field">
+        <div class="form-check">
+          <input class="form-check-input"
+                 id="jobUrgent"
+                 type="checkbox"
+                 name="urgent"
+                 value="1"
+                 {% if request.GET.urgent == '1' %}checked{% endif %}>
+          <label for="jobUrgent">Urgent jobs only</label>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex gap-3 align-items-center">
+      <button class="btn btn-primary">Apply filters</button>
+      <a href="{% url 'available_jobs' %}" class="text-link">Reset</a>
+    </div>
+  </form>
+  <div class="jobs-grid mt-4">
+    {% for job in jobs %}
+      <article class="panel job-card">
+        <div class="d-flex justify-content-between">
+          <span class="category-tag">{{ job.category.name }}</span>
+          {% if job.urgent %}
+            <span class="urgent-tag">
+              <i aria-hidden="true" class="bi bi-lightning-fill">
+              </i> Urgent</span>
+          {% endif %}
+        </div>
+        <h2>
+          <a href="{% url 'service_detail' 'job' job.pk %}">{{ job.title }}</a>
+        </h2>
+        <p>{{ job.description|truncatechars:160 }}</p>
+        <div class="job-meta">
+          <span>
+            <i aria-hidden="true" class="bi bi-geo-alt">
+            </i> {{ job.address }}</span>
+            <span>
+              <i aria-hidden="true" class="bi bi-calendar2">
+              </i> {{ job.job_date|date:'d M Y' }} · {{ job.preferred_time|time:'h:i A' }}</span>
+              <span>
+                <i aria-hidden="true" class="bi bi-tools">
+                </i> {{ job.required_skill }}</span>
+              </div>
+              <div class="job-bottom">
+                <strong>₹{{ job.budget|floatformat:0 }}</strong>
+                <a class="btn btn-outline-primary btn-sm"
+                   href="{% url 'service_detail' 'job' job.pk %}">View & accept <i aria-hidden="true" class="bi bi-arrow-right">
+                  </i>
+                </a>
+              </div>
+            </article>
+    {% empty %}
+      {% include "components/empty_state.html" with empty_title="No matching jobs right now" empty_message="Try another area or category. New opportunities will appear here." empty_icon="briefcase" %}
+    {% endfor %}
+  </div>
+  {% include "components/pagination.html" %}
+{% endblock %}

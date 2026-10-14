@@ -1,0 +1,178 @@
+{% extends "dashboard/base.html" %}
+{% load platform_tags %}
+{% block content %}
+  <div class="detail-layout">
+    <div>
+      <article class="panel">
+        <div class="d-flex gap-2 flex-wrap mb-4">
+          {% include "components/status_badge.html" with status=service.status %}
+          <span class="category-tag">{{ service.category.name }}</span>
+          {% if service.urgent %}
+            <span class="urgent-tag">
+              <i aria-hidden="true" class="bi bi-lightning-fill">
+              </i> Urgent</span>
+          {% endif %}
+        </div>
+        <h2>What needs to be done</h2>
+        <p class="preserve-lines">{{ service.description }}</p>
+        {% if service.required_skill %}
+          <h3>Required skills</h3>
+          <p>{{ service.required_skill }}</p>
+        {% endif %}
+        {% if service.special_instructions %}
+          <h3>Special instructions</h3>
+          <p class="preserve-lines">{{ service.special_instructions }}</p>
+        {% endif %}
+        <div class="detail-grid">
+          <div>
+            <span>Scheduled date</span>
+            <strong>{{ service.job_date|date:'l, d M Y' }}</strong>
+          </div>
+          <div>
+            <span>Preferred time</span>
+            <strong>{{ service.preferred_time|time:'h:i A' }}</strong>
+          </div>
+          <div>
+            <span>Service address</span>
+            <strong>{{ service.address }}</strong>
+          </div>
+          <div>
+            <span>Total budget</span>
+            <strong>₹{{ service.budget|floatformat:2 }}</strong>
+          </div>
+        </div>
+        {% if service.latitude != None %}
+          <div class="location-map"
+               data-location-map
+               data-lat="{{ service.latitude }}"
+               data-lng="{{ service.longitude }}"
+               data-map-id="{{ maps_id }}"
+               hidden></div>
+          <p class="small text-muted mt-3">Coordinates: {{ service.latitude }}, {{ service.longitude }}</p>
+        {% endif %}
+      </article>
+      <section class="panel mt-4">
+        <h2>Service progress</h2>
+        <div class="service-timeline">
+          <div class="timeline-step done">
+            <i aria-hidden="true" class="bi bi-send">
+            </i>
+            <span>{% if service.kind == "job" %}Published{% else %}Requested{% endif %}</span>
+          </div>
+          <div class="timeline-step {% if service.status == 'ACCEPTED' or service.status == 'IN_PROGRESS' or service.status == 'COMPLETED' %}done{% endif %}">
+            <i aria-hidden="true" class="bi bi-person-check">
+            </i>
+            <span>Accepted</span>
+          </div>
+          <div class="timeline-step {% if service.status == 'IN_PROGRESS' or service.status == 'COMPLETED' %}done{% endif %}">
+            <i aria-hidden="true" class="bi bi-tools">
+            </i>
+            <span>In progress</span>
+          </div>
+          <div class="timeline-step {% if service.status == 'COMPLETED' %}done{% endif %}">
+            <i aria-hidden="true" class="bi bi-check2-circle">
+            </i>
+            <span>Completed</span>
+          </div>
+        </div>
+        {% if service.status == "CANCELLED" or service.status == "REJECTED" %}
+          <p class="info-banner mt-3">This service is {{ service.status|pretty|lower }} and cannot be reopened.</p>
+        {% endif %}
+        <div class="service-actions">
+          {% for action in actions %}
+            <form method="post"
+                  action="{% url 'service_transition' service.kind service.pk %}"
+                  data-confirm="Change this service to {{ action|pretty|lower }}?">
+              {% csrf_token %}
+              <input type="hidden" name="target" value="{{ action }}">
+              <button class="btn {% if action == 'CANCELLED' or action == 'REJECTED' %}btn-outline-danger{% else %}btn-primary{% endif %}">
+                {% if action == "ACCEPTED" %}Accept {% if service.kind == "job" %}job{% else %}booking{% endif %}
+{% elif action == "IN_PROGRESS" %}Start work{% elif action == "COMPLETED" %}Complete service{% elif action == "REJECTED" %}Reject request{% else %}Cancel service{% endif %}
+  </button>
+  </form>
+{% endfor %}
+</div>
+<p class="small text-muted mt-3">Customers can cancel before work starts. The assigned worker accepts, starts and completes work. Completed services are final.</p>
+</section>
+<section class="panel mt-4">
+  <h2>Payment & feedback</h2>
+  {% if payment %}
+    <p>{{ payment.get_payment_status_display }} · ₹{{ payment.amount }}</p>
+    <a class="btn btn-light" href="{% url 'payment_detail' payment.pk %}">View payment receipt</a>
+  {% elif is_customer_owner and service.status == "COMPLETED" %}
+    <a class="btn btn-primary"
+       href="{% url 'payment_create' service.kind service.pk %}">Record payment <i aria-hidden="true"
+    class="bi bi-credit-card">
+      </i>
+    </a>
+  {% else %}
+    <p class="text-muted">Payment recording becomes available after service completion.</p>
+  {% endif %}
+  <hr>
+  {% if review %}
+    <span class="stars">{{ review.rating|stars }}</span>
+    <p>{{ review.text }}</p>
+  {% elif is_customer_owner and service.status == "COMPLETED" %}
+    <a class="btn btn-outline-primary"
+       href="{% url 'review_create' service.kind service.pk %}">Write a review <i aria-hidden="true"
+    class="bi bi-star">
+      </i>
+    </a>
+  {% else %}
+    <p class="text-muted">The customer can review this professional after completion.</p>
+  {% endif %}
+</section>
+</div>
+<aside>
+  <section class="panel">
+    <h2>People on this service</h2>
+    <div class="participant">
+      <span class="avatar avatar-sm">{{ service.customer.initials }}</span>
+      <div>
+        <strong>{{ service.customer.display_name }}</strong>
+        <small>Customer</small>
+      </div>
+    </div>
+    {% if service.worker %}
+      <div class="participant">
+        <span class="avatar avatar-sm">{{ service.worker.user.initials }}</span>
+        <div>
+          <strong>{{ service.worker.user.display_name }}</strong>
+          <small>{{ service.worker.designation }}</small>
+        </div>
+      </div>
+      <a class="text-link"
+         href="{% url 'worker_detail' service.worker.pk %}">Professional profile <i aria-hidden="true"
+    class="bi bi-arrow-up-right">
+        </i>
+      </a>
+    {% else %}
+      <p class="text-muted mt-3">Awaiting a professional.</p>
+    {% endif %}
+    {% if service.status != "OPEN" and service.status != "REQUESTED" and service.status != "REJECTED" %}
+      <hr>
+      <h3>Contact details</h3>
+      <p class="small">Customer: {{ service.customer.phone }}{% if service.worker %}
+        <br>Professional: {{ service.worker.user.phone }}{% endif %}
+    </p>
+  {% endif %}
+  <hr>
+  <span class="text-muted small">
+    {{ service.kind|title }} #{{ service.pk }}
+    <br>
+  Created {{ service.created_at|date:'d M Y, h:i A' }}</span>
+</section>
+<section class="panel mt-4">
+  <i aria-hidden="true" class="bi bi-headset support-icon">
+  </i>
+  <h3>Something needs attention?</h3>
+  <p>Raise a complaint and our administrator will help.</p>
+  <a class="text-link"
+     href="{% url 'complaint_create' %}">Contact support <i aria-hidden="true"
+    class="bi bi-arrow-right">
+    </i>
+  </a>
+</section>
+</aside>
+</div>
+{% endblock %}
